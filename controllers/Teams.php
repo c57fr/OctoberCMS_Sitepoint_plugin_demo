@@ -64,7 +64,7 @@ class Teams extends Controller
         // update users team_id
         if ($inputs['users']) {
             \Backend\Models\User::whereIn('id', $inputs['users'])
-            ->update(['team_id' => $teamModel->id]);
+                ->update(['team_id' => $teamModel->id]);
         }
 
         \Flash::success('Team saved successfully');
@@ -80,8 +80,10 @@ class Teams extends Controller
             ->update(['team_id' => 0]);
 
         // update users team_id
-        \Backend\Models\User::whereIn('id', $inputs['users'])
+        if ($inputs['users']) {
+            \Backend\Models\User::whereIn('id', $inputs['users'])
             ->update(['team_id' => $recordId]);
+        }
 
         $this->asExtension('FormController')->update_onSave($recordId, $context);
     }
