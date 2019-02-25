@@ -1,16 +1,34 @@
-<?php namespace Rafie\SitepointDemo\Controllers;
+<?php
 
-use BackendMenu;
+/*
+ * Ce fichier est la propriété de C57.fr
+ *
+ * (c) Membre@c57.fr - 2019
+ *
+ * Et C57... C'est à VOUS !
+ *
+ * Sérieusement, ce fichier source est sujet à la license MIT*.
+ * Mais je compte sur vous pour toujours chercher à l'améliorer et à votre tour, en faire profiter
+ * un max de monde grâce aux techniques offertes dans c57.fr.
+ *
+ * @Bi1tô, & Bon code !
+ *
+ *  *: En gros...: Vous en faites ce que vous voulez !!!
+ */
+
+namespace Rafie\SitepointDemo\Controllers;
+
 use Backend\Classes\Controller;
+use BackendMenu;
 
 /**
- * Teams Back-end Controller
+ * Teams Back-end Controller.
  */
 class Teams extends Controller
 {
     public $implement = [
         'Backend.Behaviors.FormController',
-        'Backend.Behaviors.ListController'
+        'Backend.Behaviors.ListController',
     ];
 
     public $formConfig = 'config_form.yaml';
@@ -27,10 +45,9 @@ class Teams extends Controller
 
     public function formExtendFields($form)
     {
-        if( $form->getContext() === 'update')
-        {
-            $team = $form->model;
-            $userField = $form->getField('users');
+        if ('update' === $form->getContext()) {
+            $team             = $form->model;
+            $userField        = $form->getField('users');
             $userField->value = $team->users->lists('id');
         }
     }
@@ -40,15 +57,17 @@ class Teams extends Controller
         $inputs = post('Team');
 
         // save team
-        $teamModel = new \Rafie\SitepointDemo\Models\Team;
+        $teamModel       = new \Rafie\SitepointDemo\Models\Team();
         $teamModel->name = $inputs['name'];
         $teamModel->save();
 
         // update users team_id
-        \Backend\Models\User::whereIn('id', $inputs['users'])
-                            ->update(['team_id' => $teamModel->id]);
+        if ($inputs['users']) {
+            \Backend\Models\User::whereIn('id', $inputs['users'])
+            ->update(['team_id' => $teamModel->id]);
+        }
 
-        \Flash::success("Team saved successfully");
+        \Flash::success('Team saved successfully');
 
         return $this->makeRedirect('update', $teamModel);
     }
@@ -58,11 +77,11 @@ class Teams extends Controller
         $inputs = post('Team');
 
         \Backend\Models\User::where('team_id', $recordId)
-                            ->update(['team_id' => 0]);
+            ->update(['team_id' => 0]);
 
         // update users team_id
         \Backend\Models\User::whereIn('id', $inputs['users'])
-                            ->update(['team_id' => $recordId]);
+            ->update(['team_id' => $recordId]);
 
         $this->asExtension('FormController')->update_onSave($recordId, $context);
     }
@@ -70,6 +89,6 @@ class Teams extends Controller
     public function formAfterDelete($model)
     {
         \Backend\Models\User::where('team_id', $model->id)
-                            ->update(['team_id' => 0]);
+            ->update(['team_id' => 0]);
     }
 }
