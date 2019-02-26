@@ -13,3 +13,9 @@ fields:
     users:
         label: Users
         type: checkboxlist
+    # slug:
+    #     label: Slug
+    #     type: \Rafie\SitepointDemo\FormWidgets\UniqueValue
+    #     modelClass: \RainLab\Blog\Models\Post
+    #     selectFrom: slug
+    #     pattern: text
